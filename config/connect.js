@@ -1,15 +1,46 @@
+//bring mysql2 into connection
 const mysql = require('mysql2')
 
 //bring our .env info into connections
 require('dotenv').config();
-//also need to change this section to match our .env import
+
+//imports the fs built in package
+const fs = require('fs')
+
+//create database using the login info in our .env file
 const db = mysql.createConnection({
-    host: 'localhost',
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    port: 3306
-  }
+  host: 'localhost',
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  port: 3306
+}
 );
+
+db.connect(err => {
+  if (err) {
+    console.log(err)
+  } else {
+    console.log('Connection Successful!');
+    // createTable();
+    // addSeeds();
+  }
+});
+
+function createTable(path) {
+  fs.readFile('./db/schema.sql', 'utf8', (err, sql) => {
+    if (err) {
+      console.log(err)
+    } else {
+      db.query(sql, (err) => {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log('Success')
+        }
+      })
+    }
+  })
+}
 
 module.exports = db;
