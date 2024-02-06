@@ -7,7 +7,7 @@ require('dotenv').config();
 //imports the fs built in package
 const fs = require('fs')
 
-//create database using the login info in our .env file
+//login into database using the login info in our .env file
 const db = mysql.createConnection({
   host: 'localhost',
   database: process.env.DB_NAME,
@@ -17,6 +17,7 @@ const db = mysql.createConnection({
 }
 );
 
+//make connection to db
 db.connect(err => {
   if (err) {
     console.log(err)
@@ -27,6 +28,7 @@ db.connect(err => {
   }
 });
 
+//create db?
 function createTable(path) {
   fs.readFile('./db/schema.sql', 'utf8', (err, sql) => {
     if (err) {
