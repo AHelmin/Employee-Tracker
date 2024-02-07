@@ -24,7 +24,13 @@ CREATE TABLE employee (
   role_id INT,
     FOREIGN KEY (role_id)
     REFERENCES `role`(id),
-  manager_id INT,
+  manager_id INT NULL,
     FOREIGN KEY (manager_id)
     REFERENCES employee(id)
 );
+
+
+SELECT *
+FROM `role`
+LEFT JOIN department
+ON `role`.department_id=department.id

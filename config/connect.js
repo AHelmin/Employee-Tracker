@@ -23,26 +23,8 @@ db.connect(err => {
     console.log(err)
   } else {
     console.log('Connection Successful!');
-    // createTable();
-    // addSeeds();
   }
 });
 
-//create db?
-function createTable(path) {
-  fs.readFile('./db/schema.sql', 'utf8', (err, sql) => {
-    if (err) {
-      console.log(err)
-    } else {
-      db.query(sql, (err) => {
-        if (err) {
-          console.log(err)
-        } else {
-          console.log('Success')
-        }
-      })
-    }
-  })
-}
 
 module.exports = db;
