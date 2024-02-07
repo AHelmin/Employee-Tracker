@@ -28,10 +28,18 @@ async function promptMainMenu() {
     type: 'list',
     message: 'What would you like to do?',
     name: 'mainMenu',
-    choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add Department', 'Add Role', 'Add Employee', 'Update Employee Role', 'See Budget by Department', 'Update Employee Manager', 'Quit'],
+    choices: ['View All Departments',
+      'View All Roles',
+      'View All Employees',
+      'Add Department',
+      'Add Role',
+      'Add Employee',
+      'Update Employee Role',
+      'See Budget by Department',
+      'Update Employee Manager',
+      'Quit']
   }
   const data = await inquirer.prompt(questions);
-  console.log(data)
   if (data.mainMenu === 'View All Employees') {
     await getEmployee()
   }
@@ -81,18 +89,13 @@ async function getDepartments() {
   // const tableData = rows.map(row => Object.values(row))
   console.table(rows);
   promptMainMenu()
-}
+};
 
 async function getEmployee() {
   const [rows] = await db.promise().query("SELECT a.id AS id, a.first_name AS first_name, a.last_name AS last_name, `role`.title AS title, department.name AS department_name, `role`.salary AS salary, CONCAT(b.first_name, ' ', b.last_name) AS manager_name FROM employee a JOIN `role` ON a.role_id = `role`.id JOIN department ON `role`.department_id = department.id LEFT JOIN employee b ON a.manager_id = b.id;");
   // const tableData = rows.map(row => Object.values(row))
-  console.table(rows);
+  console.table(rows, ['id', 'first_name', 'last_name', 'title', 'department_name', 'salary', 'manager_name']);
   promptMainMenu()
-}
-
-async function getManager() {
-  const [rows] = await db.promise().query(`SELECT b.id AS id FROM employee a JOIN \`role\` ON a.role_id = \`role\`.id JOIN department ON \`role\`.department_id = department.id LEFT JOIN employee b ON a.manager_id = b.id WHERE \`role\`.id = ${roleID};`);
-  // console.table(rows)
 };
 
 async function getManagerForPrompt() {
@@ -110,7 +113,7 @@ async function getRoles() {
   const [rows] = await db.promise().query("SELECT `role`.title AS title, role.id AS id, department.name AS name, `role`.salary AS salary FROM `role` LEFT JOIN department ON `role`.department_id=department.id");
   console.table(rows)
   promptMainMenu()
-}
+};
 
 async function getRolesForPrompt() {
   const [rows] = await db.promise().query('SELECT * FROM role');
@@ -120,32 +123,32 @@ async function getRolesForPrompt() {
 //functions below will be the add/create functions
 
 async function updateEmployeeManager() {
- const managers = await getManagerForPrompt();
- const managerChoices = managers.map(({ first_name, last_name, id }) => ({
-  name: first_name + ' ' + last_name,
-  value: id
-}))
-const employees = await getEmployeesForPrompt();
-const employeeChoices = employees.map(({ first_name, last_name, id }) => ({
-  name: first_name + ' ' + last_name,
-  value: id
-}))
-const questions = [
-  {
-    type: 'list',
-    message: "Which employee needs a new manager?",
-    name: 'employee',
-    choices: employeeChoices,
-  },
-  {
-    type: 'list',
-    message: "Who is the new manager for this employee?",
-    name: 'manager',
-    choices: managerChoices,
-  },
-]
-const answers = await inquirer.prompt(questions)
-await db.promise().query(`UPDATE employee SET manager_id = "${answers.manager}"
+  const managers = await getManagerForPrompt();
+  const managerChoices = managers.map(({ first_name, last_name, id }) => ({
+    name: first_name + ' ' + last_name,
+    value: id
+  }))
+  const employees = await getEmployeesForPrompt();
+  const employeeChoices = employees.map(({ first_name, last_name, id }) => ({
+    name: first_name + ' ' + last_name,
+    value: id
+  }))
+  const questions = [
+    {
+      type: 'list',
+      message: "Which employee needs a new manager?",
+      name: 'employee',
+      choices: employeeChoices,
+    },
+    {
+      type: 'list',
+      message: "Who is the new manager for this employee?",
+      name: 'manager',
+      choices: managerChoices,
+    },
+  ]
+  const answers = await inquirer.prompt(questions)
+  await db.promise().query(`UPDATE employee SET manager_id = "${answers.manager}"
   WHERE id = "${answers.employee}";`)
   promptMainMenu()
 };
@@ -164,7 +167,6 @@ async function departmentBudget() {
     },
   ]
   const answers = await inquirer.prompt(questions)
-  console.log(answers)
   const department = answers.role
   const [budget] = await db.promise().query(`SELECT department.name, SUM(\`role\`.salary) AS TotalBudget FROM \`role\` JOIN department ON \`role\`.department_id = department.id WHERE department.name = '${department}' GROUP BY department.name;`);
   if (budget.length === 0) {
@@ -214,9 +216,6 @@ async function addEmployee() {
     },
   ]
   const answers = await inquirer.prompt(questions)
-  console.log(answers.role)
-  // const manager = await getManagerByRoleId(answers.role)
-  // console.log(manager)
   await db.promise().query(`INSERT INTO employee(first_name, last_name, role_id, manager_id)
   VALUES("${answers.fname}", "${answers.lname}", "${answers.role}",${answers.manager});`)
   promptMainMenu();
@@ -250,7 +249,6 @@ async function updateEmployeeRole() {
   ]
   //how do i import the role id foreign key
   const answers = await inquirer.prompt(questions)
-  console.log(answers)
   await db.promise().query(`UPDATE employee SET role_id = "${answers.role}"
   WHERE id = "${answers.employee}";`)
   promptMainMenu()
@@ -299,12 +297,6 @@ async function addDepartment() {
   await db.promise().query(`INSERT INTO department (name) VALUES ("${answers.department}");`)
   promptMainMenu()
 };
-
-
-
-
-
-
 
 initialize();
 
