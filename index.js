@@ -128,6 +128,10 @@ async function updateEmployeeManager() {
     name: first_name + ' ' + last_name,
     value: id
   }))
+  managerChoices.push({
+    name: 'No Manager',
+    value: null,
+  })
   const employees = await getEmployeesForPrompt();
   const employeeChoices = employees.map(({ first_name, last_name, id }) => ({
     name: first_name + ' ' + last_name,
@@ -148,7 +152,7 @@ async function updateEmployeeManager() {
     },
   ]
   const answers = await inquirer.prompt(questions)
-  await db.promise().query(`UPDATE employee SET manager_id = "${answers.manager}"
+  await db.promise().query(`UPDATE employee SET manager_id = ${answers.manager}
   WHERE id = "${answers.employee}";`)
   promptMainMenu()
 };
