@@ -22,10 +22,6 @@ Then use the arrow keys to make the desired selection. After that, either naviga
 
 ![Employee Tracker Question Prompt](./assets/images/Question_Prompt.png)
 
-To select a shape, use the arrow keys to select the desired shape and press enter.
-
-![Shape List](./assets/images/SVG_shape_list.png)
-
 A video demonstration can be found at this link: https://drive.google.com/file/d/1RTl2ph-XE139FwStpsBb_pKNm3GvLo1g/view.
 
 ## Credits
